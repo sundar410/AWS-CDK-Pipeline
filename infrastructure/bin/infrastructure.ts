@@ -5,8 +5,8 @@ import {identifyResource} from '../lib/config-util';
 import {CiCdStack} from '../lib/ci-cd.stack';
 import {Fn} from 'aws-cdk-lib';
 
-const accountId = '<<YOUR_ACCOUNT_ID>>';
-const region = '<<YOUR_REGION>>';
+const accountId = '693896544254';
+const region = 'us-east-1';
 
 const app = new cdk.App();
 
@@ -15,16 +15,17 @@ const staticSiteResourcePrefix = 'cdk-web-static';
 const STATIC_SITE_BUCKET_NAME_OUTPUT_ID = identifyResource(staticSiteResourcePrefix, 'bucket-name');
 const STATIC_SITE_DISTRIBUTION_ID_OUTPUT_ID = identifyResource(staticSiteResourcePrefix, 'distribution-id');
 
+
 new StaticSiteStack(app, identifyResource(staticSiteResourcePrefix, 'stack'), {
   env: {
     account: accountId,
     region: region,
   },
   resourcePrefix: staticSiteResourcePrefix,
-  hostedZoneName: '<<YOUR_HOSTED_ZONE_NAME>>',
-  domainName: '<<YOUR_DOMAIN_NAME>>',
+  hostedZoneName: 'www.sundar.com',
+  domainName: 'static.www.sundar.com',
   includeWWW: false,
-  siteSourcePath: '../dist',
+  siteSourcePath: '../src',
   staticSiteBucketNameOutputId: STATIC_SITE_BUCKET_NAME_OUTPUT_ID,
   staticSiteDistributionIdOutputId: STATIC_SITE_DISTRIBUTION_ID_OUTPUT_ID,
 });
@@ -42,9 +43,9 @@ new CiCdStack(app, identifyResource(ciCdResourcePrefix, 'stack'), {
   resourcePrefix: ciCdResourcePrefix,
   distributionId: staticSiteDistributionId,
   bucket: staticSiteBucket,
-  repo: '<<YOUR_REPO_NAME>>',
-  repoOwner: '<<YOUR_REPO_OWNER>>',
-  repoBranch: 'master',
+  repo: 'AWS-CDK-Pipeline',
+  repoOwner: 'sundar410',
+  repoBranch: 'main',
   githubTokenSecretId: '/static-cdk/cicd/github_token',
-  buildAlertEmail: '<<YOUR_EMAIL_ADDRESS>>>',
+  buildAlertEmail: 'm.sundar410@gmail.com',
 });

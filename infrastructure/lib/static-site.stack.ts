@@ -59,39 +59,40 @@ export class StaticSiteStack extends Stack {
         new CfnOutput(this, props.staticSiteBucketNameOutputId, {value: siteBucket.bucketName,exportName: props.staticSiteBucketNameOutputId});
 
         // Create TLS certificate + automatic DNS validation
-        const certificateArn = new acm.DnsValidatedCertificate(this, identifyResource(props.resourcePrefix,'site-certificate'), {
-            domainName: siteDomain,
-            hostedZone: zone,
-            region: 'us-east-1', // Cloudfront only checks this region for certificates.
-            subjectAlternativeNames: props.includeWWW ? [fullSiteDomain] : []
-        }).certificateArn;
+        // const certificateArn = new acm.DnsValidatedCertificate(this, identifyResource(props.resourcePrefix,'site-certificate'), {
+        //     domainName: siteDomain,
+        //     hostedZone: zone,
+        //     region: 'us-east-1', // Cloudfront only checks this region for certificates.
+        //     subjectAlternativeNames: props.includeWWW ? [fullSiteDomain] : []
+        // }).certificateArn;
 
         // Create a CloudFront viewer certificate enforcing usage of HTTPS & TLS v1.2
-        const viewerCertificate = cloudfront.ViewerCertificate.fromAcmCertificate({
-                certificateArn: certificateArn,
-                env: {
-                    region: Aws.REGION,
-                    account: Aws.ACCOUNT_ID
-                },
-                node: this.node,
-                stack: this,
-                metricDaysToExpiry: () =>
-                    new cloudwatch.Metric({
-                        namespace: 'TLS Viewer Certificate Validity',
-                        metricName: 'TLS Viewer Certificate Expired',
-                    }),
-                applyRemovalPolicy: (policy: RemovalPolicy) => {
-                }
-            },
-            {
-                sslMethod: cloudfront.SSLMethod.SNI,
-                securityPolicy: cloudfront.SecurityPolicyProtocol.TLS_V1_2_2021,
-                aliases: props.includeWWW ? [siteDomain, fullSiteDomain] : [siteDomain],
-            })
+        // const viewerCertificate = cloudfront.ViewerCertificate.fromAcmCertificate({
+        //         certificateArn: certificateArn,
+        //         env: {
+        //             region: Aws.REGION,
+        //             account: Aws.ACCOUNT_ID
+        //         },
+        //         node: this.node,
+        //         stack: this,
+        //         metricDaysToExpiry: () =>
+        //             new cloudwatch.Metric({
+        //                 namespace: 'TLS Viewer Certificate Validity',
+        //                 metricName: 'TLS Viewer Certificate Expired',
+        //             }),
+        //         applyRemovalPolicy: (policy: RemovalPolicy) => {
+        //         }
+        //     },
+        //     {
+        //         sslMethod: cloudfront.SSLMethod.SNI,
+        //         securityPolicy: cloudfront.SecurityPolicyProtocol.TLS_V1_2_2021,
+        //         aliases: props.includeWWW ? [siteDomain, fullSiteDomain] : [siteDomain],
+        //     })
 
         // Set up the CloudFront distribution
+        
         const distribution = new cloudfront.CloudFrontWebDistribution(this, identifyResource(props.resourcePrefix,'site-distribution'), {
-            viewerCertificate,
+          
             originConfigs: [
                 {
                     s3OriginSource: {
